@@ -93,3 +93,7 @@ Implemented a React 19 + Vite + TypeScript client (`frontend/`):
   (Node build → nginx), plus a root `docker-compose.yml` that runs the API on host port
   5282 and the UI on 8080. CORS allows `http://localhost:8080`; README documents
   `docker compose up --build`.
+
+  ## 5. CLAUDE.md
+
+  > Nice. Final touch: create a project-level CLAUDE.md, outlining all important decisions and constraints for further maintainability.
