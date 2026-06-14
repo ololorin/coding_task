@@ -1,4 +1,6 @@
 using System.Net;
+using System.Net.Http.Json;
+using CurrencyConverter.Api.Contracts;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Xunit;
 
@@ -15,7 +17,7 @@ public class ConvertEndpointTests : IClassFixture<WebApplicationFactory<Program>
     public ConvertEndpointTests(WebApplicationFactory<Program> factory) => _factory = factory;
 
     [Fact]
-    public async Task Convert_returns_words_and_sets_content_language()
+    public async Task Convert_WithAcceptLanguageHeader_ReturnsWordsAndSetsContentLanguage()
     {
         var client = _factory.CreateClient();
 
@@ -26,8 +28,9 @@ public class ConvertEndpointTests : IClassFixture<WebApplicationFactory<Program>
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
-        var words = await response.Content.ReadAsStringAsync();
-        Assert.Equal("twenty-five dollars and ten cents", words);
+        var payload = await response.Content.ReadFromJsonAsync<ConversionResponse>();
+        Assert.NotNull(payload);
+        Assert.Equal("twenty-five dollars and ten cents", payload.ConversionResult);
 
         Assert.Equal("en", response.Content.Headers.ContentLanguage.SingleOrDefault());
     }

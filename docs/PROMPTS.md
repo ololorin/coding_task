@@ -42,6 +42,19 @@ file documents the prompts used, for transparency.
 - **German currency wording:** `Dollar` / `Cent` (German numerals + German noun forms,
   keeping the dollar currency).
 
-## 2. Subsequent steps
-
-_To be appended as the React UI (step 2) and any follow-up work are implemented._
+## 2. API fixes
+> Good start. A few changes before we proceed further:
+> 1. Currently API returns a raw string. This is undesirable. Wrap the string into a simple DTO object, eg:
+> {
+> "conversionResult": "..."
+> }
+> Change e2e test accordingly.
+>
+> 2. Change tests naming to be closer to standard Microsoft Test Naming convention: 
+> Name of the method being tested
+> Scenario under which the method is being tested
+> Expected behavior when the scenario is invoked
+>
+> Eg. Converts_english_pdf_examples -> Convert_EnglishPdfExamples_ReturnsExpectedResults
+>
+> 3. Move the .slnx file from the repository root to the backend folder, change inner folder structure accordingly.

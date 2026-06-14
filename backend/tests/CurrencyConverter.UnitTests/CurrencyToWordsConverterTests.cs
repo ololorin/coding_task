@@ -25,7 +25,7 @@ public class CurrencyToWordsConverterTests
     [InlineData("45100", "forty-five thousand one hundred dollars")]
     [InlineData("999999999.99",
         "nine hundred ninety-nine million nine hundred ninety-nine thousand nine hundred ninety-nine dollars and ninety-nine cents")]
-    public void Converts_english_pdf_examples(string amount, string expected)
+    public void Convert_EnglishPdfExamples_ReturnsExpectedResults(string amount, string expected)
     {
         Assert.Equal(expected, Create().Convert(Amount(amount), SupportedLanguages.English));
     }
@@ -39,7 +39,7 @@ public class CurrencyToWordsConverterTests
     [InlineData("45100", "fünfundvierzigtausendeinhundert Dollar")]
     [InlineData("999999999.99",
         "neunhundertneunundneunzig Millionen neunhundertneunundneunzigtausendneunhundertneunundneunzig Dollar und neunundneunzig Cent")]
-    public void Converts_german_pdf_examples(string amount, string expected)
+    public void Convert_GermanPdfExamples_ReturnsExpectedResults(string amount, string expected)
     {
         Assert.Equal(expected, Create().Convert(Amount(amount), SupportedLanguages.German));
     }
@@ -50,7 +50,7 @@ public class CurrencyToWordsConverterTests
     [InlineData("100", "one hundred dollars")]
     [InlineData("1000000", "one million dollars")]
     [InlineData("1000001", "one million one dollars")]
-    public void Converts_english_edge_cases(string amount, string expected)
+    public void Convert_EnglishEdgeCases_ReturnsExpectedResults(string amount, string expected)
     {
         Assert.Equal(expected, Create().Convert(Amount(amount), SupportedLanguages.English));
     }
@@ -62,13 +62,13 @@ public class CurrencyToWordsConverterTests
     [InlineData("2000000", "zwei Millionen Dollar")]
     [InlineData("16", "sechzehn Dollar")]
     [InlineData("30", "dreißig Dollar")]
-    public void Converts_german_edge_cases(string amount, string expected)
+    public void Convert_GermanEdgeCases_ReturnsExpectedResults(string amount, string expected)
     {
         Assert.Equal(expected, Create().Convert(Amount(amount), SupportedLanguages.German));
     }
 
     [Fact]
-    public void Unknown_language_falls_back_to_english()
+    public void Convert_UnknownLanguage_FallsBackToEnglish()
     {
         Assert.Equal("one dollar", Create().Convert(1m, "fr"));
     }
@@ -78,13 +78,13 @@ public class CurrencyToWordsConverterTests
     [InlineData("1000000000")]   // one above the maximum dollars
     [InlineData("1000000000.00")]
     [InlineData("1.001")]        // more than two decimal places
-    public void Rejects_invalid_amounts(string amount)
+    public void Convert_InvalidAmount_ThrowsCurrencyConversionException(string amount)
     {
         Assert.Throws<CurrencyConversionException>(() => Create().Convert(Amount(amount), SupportedLanguages.English));
     }
 
     [Fact]
-    public void Accepts_the_maximum_amount()
+    public void Convert_MaximumAmount_ReturnsExpectedResult()
     {
         var result = Create().Convert(CurrencyToWordsConverter.MaxAmount, SupportedLanguages.English);
         Assert.StartsWith("nine hundred ninety-nine million", result);

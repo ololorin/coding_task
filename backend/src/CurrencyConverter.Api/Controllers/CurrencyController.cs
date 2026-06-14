@@ -1,4 +1,5 @@
 using System.Globalization;
+using CurrencyConverter.Api.Contracts;
 using CurrencyConverter.Domain;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -21,13 +22,13 @@ public sealed class CurrencyController : ControllerBase
     /// <param name="amount">The amount in dollars using an invariant ('.') decimal separator.</param>
     [HttpGet("convert")]
     [AllowAnonymous]
-    public ActionResult<string> Convert([FromQuery] decimal amount)
+    public ActionResult<ConversionResponse> Convert([FromQuery] decimal amount)
     {
         var language = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
 
         try
         {
-            return Ok(_converter.Convert(amount, language));
+            return Ok(new ConversionResponse(_converter.Convert(amount, language)));
         }
         catch (CurrencyConversionException ex)
         {

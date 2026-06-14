@@ -18,6 +18,7 @@ exposed through a small REST API; a React 19 client (added in a later step) cons
 
 ```
 backend/
+  CurrencyConverter.slnx        # solution file
   src/
     CurrencyConverter.Domain/   # pure conversion logic (no ASP.NET dependency)
     CurrencyConverter.Api/      # ASP.NET Core: controller, localization, API-key auth
@@ -35,10 +36,11 @@ docs/PROMPTS.md                 # AI prompt history (transparency requirement)
 ## Build, test, run
 
 ```bash
-# from the repository root
+# from the backend/ folder
+cd backend
 dotnet build                                  # build the whole solution
 dotnet test                                   # run unit + e2e tests
-dotnet run --project backend/src/CurrencyConverter.Api
+dotnet run --project src/CurrencyConverter.Api
 ```
 
 The API listens on the URL printed at startup (e.g. `http://localhost:5282`).
@@ -54,13 +56,14 @@ Converts an amount to words.
 - The language is taken from the **`Accept-Language`** request header (`en` or `de`,
   defaulting to `en`). The response echoes the language used in the **`Content-Language`**
   header.
-- Returns `200 text/plain` with the words, or `400 application/problem+json` for invalid
-  amounts (negative, above the maximum, or more than two decimals).
+- Returns `200` with a JSON body `{ "conversionResult": "..." }`, or
+  `400 application/problem+json` for invalid amounts (negative, above the maximum, or more
+  than two decimals).
 - Anonymous — no credentials required.
 
 ```bash
 curl "http://localhost:5282/api/currency/convert?amount=25.1" -H "Accept-Language: de"
-# => fünfundzwanzig Dollar und zehn Cent   (Content-Language: de)
+# => {"conversionResult":"fünfundzwanzig Dollar und zehn Cent"}   (Content-Language: de)
 ```
 
 ### `GET /api/secure/ping`
