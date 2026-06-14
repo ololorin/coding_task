@@ -6,25 +6,33 @@
 
 export const MAX_AMOUNT = 999_999_999.99;
 
+/** The maximum amount in the input's formatted representation. */
+export const MAX_AMOUNT_FORMATTED = '999 999 999,99';
+
 export type AmountErrorKey = 'errors.empty' | 'errors.invalid' | 'errors.exceedsMax';
 
 /**
  * Sanitizes raw user input and reformats it: keeps digits and a single comma, drops
  * everything else (including any minus sign), groups the integer part with spaces and
- * caps the decimal part at two digits.
+ * caps the decimal part at two digits. Values above the maximum are clamped to the cap so
+ * the field can never hold an over-limit amount.
  */
 export function sanitizeAndFormat(raw: string): string {
   const cleaned = raw.replace(/[^\d,]/g, '');
   const firstComma = cleaned.indexOf(',');
 
+  let formatted: string;
   if (firstComma === -1) {
-    return groupThousands(cleaned);
+    formatted = groupThousands(cleaned);
+  } else {
+    const intDigits = cleaned.slice(0, firstComma).replace(/,/g, '');
+    const decDigits = cleaned.slice(firstComma + 1).replace(/,/g, '').slice(0, 2);
+    const intPart = intDigits === '' ? '0' : groupThousands(intDigits);
+    formatted = `${intPart},${decDigits}`;
   }
 
-  const intDigits = cleaned.slice(0, firstComma).replace(/,/g, '');
-  const decDigits = cleaned.slice(firstComma + 1).replace(/,/g, '').slice(0, 2);
-  const intPart = intDigits === '' ? '0' : groupThousands(intDigits);
-  return `${intPart},${decDigits}`;
+  const value = parseAmount(formatted);
+  return value !== null && value > MAX_AMOUNT ? MAX_AMOUNT_FORMATTED : formatted;
 }
 
 function groupThousands(digits: string): string {

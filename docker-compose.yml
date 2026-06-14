@@ -1,0 +1,21 @@
+services:
+  api:
+    build:
+      context: ./backend
+    ports:
+      # Host 5282 -> container 8080. The browser calls http://localhost:5282 directly.
+      - "5282:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:8080
+
+  web:
+    build:
+      context: ./frontend
+      args:
+        # Where the browser reaches the API (the published api host port above).
+        VITE_API_BASE_URL: http://localhost:5282
+    ports:
+      - "8080:80"
+    depends_on:
+      - api

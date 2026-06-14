@@ -25,10 +25,13 @@ backend/
   tests/
     CurrencyConverter.UnitTests/# xUnit: spellers, converter, validation
     CurrencyConverter.E2E/      # xUnit + WebApplicationFactory: HTTP happy-path
+  Dockerfile                    # API image (build + ASP.NET runtime)
 frontend/                       # React 19 + Vite + TypeScript client
   src/lib/        # API client + amount validation/formatting
   src/components/ # LanguageSwitch
   src/i18n.ts     # i18next setup with en/de resources
+  Dockerfile      # UI image (Node build -> nginx)
+docker-compose.yml              # bootstraps API + UI for local deployment
 docs/PROMPTS.md                 # AI prompt history (transparency requirement)
 ```
 
@@ -65,6 +68,23 @@ npm run preview    # serves the build on http://localhost:4173
 Both `http://localhost:5173` (dev) and `http://localhost:4173` (preview) are allowed by the
 API's CORS policy. If Vite picks a different port (because one is already in use), add that
 origin to `Cors:AllowedOrigins` in `backend/src/CurrencyConverter.Api/appsettings.json`.
+
+## Run with Docker Compose
+
+A [`docker-compose.yml`](docker-compose.yml) bootstraps both apps for a local deployment:
+the API (ASP.NET runtime image) and the UI (built with Node, served by nginx).
+
+```bash
+docker compose up --build
+```
+
+- **UI:** http://localhost:8080
+- **API:** http://localhost:5282
+
+The browser calls the API directly, so the UI image is built with
+`VITE_API_BASE_URL=http://localhost:5282` (set as a build arg in the compose file), and
+`http://localhost:8080` is included in the API's CORS allow-list. Stop with
+`docker compose down`.
 
 ## Build & test the backend
 

@@ -77,3 +77,19 @@ Implemented a React 19 + Vite + TypeScript client (`frontend/`):
 - Switching language re-converts the current amount (handled in the change handler rather
   than an effect, per the React 19 lint guidance).
 - Backend CORS updated to also allow the Vite preview origin (`http://localhost:4173`).
+
+## 4. Frontend cap + Docker Compose
+
+> Almost perfect. A few more things:
+> 1. Add max value validation on the frontend side too, don't allow user to input a number
+>    higher than max allowed and convert a higher number to the maximal cap
+> 2. Scaffold a docker compose file to bootstrap both frontend and backend applications for
+>    a local deployment. Add this info to the README.md file also
+
+- The amount input now **clamps** to `999 999 999,99`: any entry above the maximum is
+  capped, so the field can never hold an over-limit value (`sanitizeAndFormat` in
+  `frontend/src/lib/amount.ts`).
+- Added a multi-stage `backend/Dockerfile` (ASP.NET runtime) and `frontend/Dockerfile`
+  (Node build → nginx), plus a root `docker-compose.yml` that runs the API on host port
+  5282 and the UI on 8080. CORS allows `http://localhost:8080`; README documents
+  `docker compose up --build`.
