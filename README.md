@@ -2,7 +2,7 @@
 
 Converts a dollar amount (max `999,999,999.99`) into written-out words in **English** and
 **German**. The conversion runs entirely server-side (ASP.NET Core on .NET 10) and is
-exposed through a small REST API; a React 19 client (added in a later step) consumes it.
+exposed through a small REST API; a React 19 + Vite client consumes it.
 
 ```
 0              -> zero dollars
@@ -25,25 +25,54 @@ backend/
   tests/
     CurrencyConverter.UnitTests/# xUnit: spellers, converter, validation
     CurrencyConverter.E2E/      # xUnit + WebApplicationFactory: HTTP happy-path
-frontend/                       # React 19 client (added in step 2)
+frontend/                       # React 19 + Vite + TypeScript client
+  src/lib/        # API client + amount validation/formatting
+  src/components/ # LanguageSwitch
+  src/i18n.ts     # i18next setup with en/de resources
 docs/PROMPTS.md                 # AI prompt history (transparency requirement)
 ```
 
 ## Prerequisites
 
 - [.NET SDK 10.0+](https://dotnet.microsoft.com/download)
+- [Node.js 20+](https://nodejs.org/) (for the frontend)
 
-## Build, test, run
+## Run locally (API + UI)
+
+The app is client–server: start the **API** first, then the **UI** in a second terminal.
+The UI targets the local API at `http://localhost:5282` in both development and production
+builds (configurable via `frontend/.env`).
 
 ```bash
-# from the backend/ folder
+# Terminal 1 — API (listens on http://localhost:5282)
 cd backend
-dotnet build                                  # build the whole solution
-dotnet test                                   # run unit + e2e tests
 dotnet run --project src/CurrencyConverter.Api
+
+# Terminal 2 — UI (dev server on http://localhost:5173)
+cd frontend
+npm install        # first time only
+npm run dev        # open the printed URL, e.g. http://localhost:5173
 ```
 
-The API listens on the URL printed at startup (e.g. `http://localhost:5282`).
+To run the UI as a production build instead of the dev server:
+
+```bash
+cd frontend
+npm run build      # outputs to frontend/dist
+npm run preview    # serves the build on http://localhost:4173
+```
+
+Both `http://localhost:5173` (dev) and `http://localhost:4173` (preview) are allowed by the
+API's CORS policy. If Vite picks a different port (because one is already in use), add that
+origin to `Cors:AllowedOrigins` in `backend/src/CurrencyConverter.Api/appsettings.json`.
+
+## Build & test the backend
+
+```bash
+cd backend
+dotnet build       # build the whole solution
+dotnet test        # run unit + e2e tests
+```
 
 ## API
 
@@ -91,6 +120,10 @@ curl "http://localhost:5282/api/secure/ping" -H "X-Api-Key: dev-secret-key-chang
   language from `Accept-Language` and writes the `Content-Language` response header.
 - **Auth** is intentionally simple API-key scaffolding (`X-Api-Key`) so endpoints can be
   protected later; the `convert` endpoint stays anonymous so the UI works without tokens.
+- **Frontend** is plain React 19 + Vite + TypeScript with no design library. All text is
+  translated via **i18next** (`en`/`de`). The amount input formats live (thousands spaces,
+  a single comma, max two decimals, non-negative) and is validated client-side; the server
+  re-validates everything. Switching language re-converts the current amount.
 
 ## Assumptions & limitations
 

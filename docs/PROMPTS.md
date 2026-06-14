@@ -58,3 +58,22 @@ file documents the prompts used, for transparency.
 > Eg. Converts_english_pdf_examples -> Convert_EnglishPdfExamples_ReturnsExpectedResults
 >
 > 3. Move the .slnx file from the repository root to the backend folder, change inner folder structure accordingly.
+
+## 3. React UI
+
+> Good. Now proceed with UI implementation. After you are done, update README.md to show
+> how to launch both UI and API locally in the first section for clarity. Target UI to
+> localhost API both for debug and production for now. Don't forget to update PROMPTS.md.
+
+Implemented a React 19 + Vite + TypeScript client (`frontend/`):
+
+- Centered amount input with a **Convert** button, an output area below, and an **EN/DE**
+  language switch in the top-right.
+- **i18next** (`react-i18next` + browser language detector) drives all UI text.
+- Live input formatting/validation (single comma, thousands spaces, max two decimals,
+  non-negative, max `999 999 999,99`); the server re-validates.
+- API calls send the `Accept-Language` header; the API base URL is configured via
+  `frontend/.env` (`VITE_API_BASE_URL`), targeting the local API for dev and production.
+- Switching language re-converts the current amount (handled in the change handler rather
+  than an effect, per the React 19 lint guidance).
+- Backend CORS updated to also allow the Vite preview origin (`http://localhost:4173`).

@@ -1,0 +1,11 @@
+<Solution>
+  <Folder Name="/backend/" />
+  <Folder Name="/backend/src/">
+    <Project Path="backend/src/CurrencyConverter.Api/CurrencyConverter.Api.csproj" />
+    <Project Path="backend/src/CurrencyConverter.Domain/CurrencyConverter.Domain.csproj" />
+  </Folder>
+  <Folder Name="/backend/tests/">
+    <Project Path="backend/tests/CurrencyConverter.E2E/CurrencyConverter.E2E.csproj" />
+    <Project Path="backend/tests/CurrencyConverter.UnitTests/CurrencyConverter.UnitTests.csproj" />
+  </Folder>
+</Solution>
