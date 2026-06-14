@@ -1,0 +1,19 @@
+# ---- .NET ----
+bin/
+obj/
+*.user
+.vs/
+[Tt]est[Rr]esult*/
+*.received.*
+
+# ---- Node / frontend ----
+node_modules/
+dist/
+*.local
+
+# ---- IDE / OS ----
+.idea/
+.vscode/
+*.swp
+.DS_Store
+Thumbs.db
